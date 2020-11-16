@@ -11,11 +11,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+import com.juanesperez.pokedexreto2.comm.HTTPSWebUtilDomi;
+import com.juanesperez.pokedexreto2.comm.PokemonWorker;
 import com.juanesperez.pokedexreto2.lists.Adapter.PokemonAdapter;
 import com.juanesperez.pokedexreto2.model.Pokemon;
 
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Home extends AppCompatActivity {
 
@@ -27,6 +38,9 @@ public class Home extends AppCompatActivity {
     private PokemonAdapter adapter;
     private FirebaseFirestore db;
     private String username;
+    private String pokeName;
+    private PokemonWorker worker;
+    private HTTPSWebUtilDomi https;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +53,7 @@ public class Home extends AppCompatActivity {
         pokemonList = findViewById(R.id.pokemonList);
 
         adapter = new PokemonAdapter();
+        https = new HTTPSWebUtilDomi();
 
         pokemonList.setAdapter(adapter);
         pokemonList.setHasFixedSize(true);
@@ -49,18 +64,57 @@ public class Home extends AppCompatActivity {
         Intent i = getIntent();
         username = i.getStringExtra("myUser");
         Log.e(">>>",username);
+        getPokemon();
     }
 
     private void catchPokemon(View v) {
-        String pokeName = pokemonNameET.getText().toString();
-        HashMap<String,String> poke = new HashMap<>();
-        poke.put("pokeName",pokeName);
-        db.collection("reto2").document(username).collection("pokemons").add(poke);
-        Pokemon pokesito = new Pokemon(pokeName,"normal","10","10","10","10");
-        adapter.addPokemon(pokesito);
+        pokeName = pokemonNameET.getText().toString();
+        worker = new PokemonWorker(this);
+        worker.start();
     }
 
+    public void sendPokemon(Pokemon pokemon){
+        db.collection("reto2").document(username).collection("pokemons").add(pokemon);
+        runOnUiThread(
+                ()->{
+                    adapter.addPokemon(pokemon);
+                }
+        );
+    }
 
+    public void getPokemon(){
+        adapter.clear();
+        db.collection("reto2").document(username).collection("pokemons").get().addOnCompleteListener(
+                task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.e(">>>", document.getId() + " => " + document.getData());
+                            Pokemon pokemon = document.toObject(Pokemon.class);
+                            adapter.addPokemon(pokemon);
+                        }
+                    }
+                }
+        );
+        /*Thread thread = new Thread(
+                ()->{
+                    String json = https.GETrequest("https://firestore.googleapis.com/v1/projects/semana12firebase-af4d3/databases/(default)/documents/reto2/"+username+"/pokemons");
+                    Log.e(">>>", json);
+                    Pokemon pokemon = gson.fromJson(json,Pokemon.class);
+                    runOnUiThread(
+                            ()->{
+                                adapter.addPokemon(pokemon);
+                            }
+                    );
+                }
+        );
+        thread.start();*/
+    }
 
+    public String getPokeName() {
+        return pokeName;
+    }
 
+    public void setPokeName(String pokeName) {
+        this.pokeName = pokeName;
+    }
 }

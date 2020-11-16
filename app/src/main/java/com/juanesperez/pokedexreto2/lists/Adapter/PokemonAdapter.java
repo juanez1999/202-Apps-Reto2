@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.juanesperez.pokedexreto2.R;
 import com.juanesperez.pokedexreto2.lists.ViewModel.PokemonViewModel;
 import com.juanesperez.pokedexreto2.model.Pokemon;
@@ -46,6 +47,7 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonViewModel> {
     @Override
     public void onBindViewHolder(PokemonViewModel holder, int position) {
         holder.getNameRow().setText(pokemons.get(position).getName());
+        Glide.with(holder.getImageRow()).load(pokemons.get(position).getSprites().getFront_default()).into(holder.getImageRow());
     }
 
     @Override
