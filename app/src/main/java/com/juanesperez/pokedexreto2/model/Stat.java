@@ -1,8 +1,9 @@
 package com.juanesperez.pokedexreto2.model;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 
-public class Stat {
+public class Stat implements Serializable {
 
     private int base_stat;
 

@@ -1,6 +1,8 @@
 package com.juanesperez.pokedexreto2.model;
 
-public class SpriteGroup {
+import java.io.Serializable;
+
+public class SpriteGroup implements Serializable {
 
     private String front_default;
 

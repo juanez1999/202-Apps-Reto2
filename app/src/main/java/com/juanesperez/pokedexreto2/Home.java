@@ -25,11 +25,12 @@ import com.juanesperez.pokedexreto2.model.Stat;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements PokemonAdapter.OnPokemonClickListener{
 
     private Button catchBtn;
     private EditText pokemonNameET;
@@ -54,6 +55,7 @@ public class Home extends AppCompatActivity {
         pokemonList = findViewById(R.id.pokemonList);
 
         adapter = new PokemonAdapter();
+        adapter.setListener(this);
         https = new HTTPSWebUtilDomi();
 
         pokemonList.setAdapter(adapter);
@@ -86,7 +88,7 @@ public class Home extends AppCompatActivity {
         db.collection("reto2").document(username).collection("pokemons").add(poke);
         runOnUiThread(
                 ()->{
-                    adapter.addPokemon(pokemon);
+                    getPokemon();
                 }
         );
     }
@@ -126,4 +128,16 @@ public class Home extends AppCompatActivity {
     public void setPokeName(String pokeName) {
         this.pokeName = pokeName;
     }
+
+    @Override
+    public void onUserClick(Pokemon pokemon) {
+        Intent j= new Intent(this,PokemonViewDetail.class);
+        j.putExtra("pokemon", pokemon);
+        startActivity(j);
+    }
+
+   /* @Override
+        public void onFreePokemon(Pokemon pokemon) {
+        adapter.deletePokemon(pokemon);
+    }*/
 }

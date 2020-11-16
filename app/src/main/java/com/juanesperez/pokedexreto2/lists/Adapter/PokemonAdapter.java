@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class PokemonAdapter extends RecyclerView.Adapter<PokemonViewModel> {
 
     private ArrayList<Pokemon> pokemons;
+    private OnPokemonClickListener listener;
 
     public PokemonAdapter() {
         pokemons = new ArrayList<>();
@@ -48,10 +49,24 @@ public class PokemonAdapter extends RecyclerView.Adapter<PokemonViewModel> {
     public void onBindViewHolder(PokemonViewModel holder, int position) {
         holder.getNameRow().setText(pokemons.get(position).getName());
         Glide.with(holder.getImageRow()).load(pokemons.get(position).getSprites().getFront_default()).into(holder.getImageRow());
+        holder.getActionRow().setOnClickListener(
+                v -> {
+                    Pokemon pokemon = pokemons.get(position);
+                    listener.onUserClick(pokemon);
+                }
+        );
     }
 
     @Override
     public int getItemCount() {
         return pokemons.size();
+    }
+
+    public void setListener(OnPokemonClickListener listener){
+        this.listener = listener;
+    }
+
+    public interface OnPokemonClickListener{
+        void onUserClick(Pokemon pokemon);
     }
 }

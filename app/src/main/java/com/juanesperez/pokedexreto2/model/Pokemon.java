@@ -1,23 +1,30 @@
 package com.juanesperez.pokedexreto2.model;
 
 
-public class Pokemon {
+import java.io.Serializable;
+
+public class Pokemon implements Serializable {
 
     private String name;
     private SpriteGroup sprites;
     private Stat[] stats;
     private int life;
+    private int speed;
+    private int defense;
+    private int attack;
 
     public Pokemon() {
 
     }
 
-    public Pokemon(String name,SpriteGroup sprites, Stat[] stats, int life) {
+    public Pokemon(String name, SpriteGroup sprites, Stat[] stats, int life, int speed, int defense, int attack) {
         this.name = name;
         this.sprites = sprites;
         this.stats = stats;
         this.life = life;
-
+        this.speed = speed;
+        this.defense = defense;
+        this.attack = attack;
     }
 
     public String getName() {
@@ -50,5 +57,29 @@ public class Pokemon {
 
     public void setLife(int life) {
         this.life = life;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getDefense() {
+        return defense;
+    }
+
+    public void setDefense(int defense) {
+        this.defense = defense;
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public void setAttack(int attack) {
+        this.attack = attack;
     }
 }
