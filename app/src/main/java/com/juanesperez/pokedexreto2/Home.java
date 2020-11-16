@@ -21,6 +21,7 @@ import com.juanesperez.pokedexreto2.comm.HTTPSWebUtilDomi;
 import com.juanesperez.pokedexreto2.comm.PokemonWorker;
 import com.juanesperez.pokedexreto2.lists.Adapter.PokemonAdapter;
 import com.juanesperez.pokedexreto2.model.Pokemon;
+import com.juanesperez.pokedexreto2.model.Stat;
 
 import org.json.JSONObject;
 
@@ -74,7 +75,15 @@ public class Home extends AppCompatActivity {
     }
 
     public void sendPokemon(Pokemon pokemon){
-        db.collection("reto2").document(username).collection("pokemons").add(pokemon);
+        Map<String, Object> poke = new HashMap<>();
+        poke.put("name", pokemon.getName());
+        poke.put("sprites", pokemon.getSprites());
+        poke.put("life",pokemon.getStats()[0].getBase_stat());
+        poke.put("attack",pokemon.getStats()[1].getBase_stat());
+        poke.put("defense",pokemon.getStats()[2].getBase_stat());
+        poke.put("speed",pokemon.getStats()[5].getBase_stat());
+
+        db.collection("reto2").document(username).collection("pokemons").add(poke);
         runOnUiThread(
                 ()->{
                     adapter.addPokemon(pokemon);

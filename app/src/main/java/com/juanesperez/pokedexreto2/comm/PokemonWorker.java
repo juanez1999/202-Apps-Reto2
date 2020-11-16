@@ -26,11 +26,13 @@ public class PokemonWorker extends Thread{
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
         Gson gson = new Gson();
         String json = https.GETrequest("https://pokeapi.co/api/v2/pokemon/"+ref.getPokeName());
+        Log.e(">>>",json);
         /*Type type = new TypeToken<HashMap<String, Pokemon>>(){}.getType();
         HashMap<String, Pokemon> pokemons = gson.fromJson(json,type);*/
         Pokemon pokemon = gson.fromJson(json,Pokemon.class);
-
-        Log.e(">>>",pokemon.getSprites().getFront_default());
+        for (int i = 0; i < pokemon.getStats().length; i++) {
+            Log.e(">>>", Integer.toString(pokemon.getStats()[i].getBase_stat()));
+        };
         ref.sendPokemon(pokemon);
     }
 }
