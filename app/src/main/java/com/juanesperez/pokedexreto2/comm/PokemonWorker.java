@@ -6,12 +6,8 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.juanesperez.pokedexreto2.Home;
-import com.juanesperez.pokedexreto2.model.Pokemon;
-
-import java.lang.reflect.Type;
-import java.util.HashMap;
+import com.juanesperez.pokedexreto2.model.PokemonDTO;
 
 public class PokemonWorker extends Thread{
 
@@ -29,10 +25,10 @@ public class PokemonWorker extends Thread{
         Log.e(">>>",json);
         /*Type type = new TypeToken<HashMap<String, Pokemon>>(){}.getType();
         HashMap<String, Pokemon> pokemons = gson.fromJson(json,type);*/
-        Pokemon pokemon = gson.fromJson(json,Pokemon.class);
+        PokemonDTO pokemonDTO = gson.fromJson(json, PokemonDTO.class);
         /*for (int i = 0; i < pokemon.getStats().length; i++) {
             Log.e(">>>", Integer.toString(pokemon.getStats()[i].getBase_stat()));
         };*/
-        ref.sendPokemon(pokemon);
+        ref.sendPokemon(pokemonDTO);
     }
 }

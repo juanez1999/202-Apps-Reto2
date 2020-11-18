@@ -4,15 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.juanesperez.pokedexreto2.lists.Adapter.PokemonAdapter;
 import com.juanesperez.pokedexreto2.model.Pokemon;
+import com.juanesperez.pokedexreto2.model.PokemonDTO;
 
 public class PokemonViewDetail extends AppCompatActivity {
 
@@ -57,6 +56,7 @@ public class PokemonViewDetail extends AppCompatActivity {
                     pokespeed_tv.setText(Integer.toString(pokemon.getSpeed()));
                     pokedefense_tv.setText(Integer.toString(pokemon.getDefense()));
                     pokeattack_tv.setText(Integer.toString(pokemon.getAttack()));
+                    poketype_tv.setText(pokemon.getType());
                     pokename_tv.setText(pokemon.getName());
                     Glide.with(pokeimage).load(pokemon.getSprites().getFront_default()).into(pokeimage);
                 }

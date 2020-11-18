@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide;
 import com.juanesperez.pokedexreto2.R;
 import com.juanesperez.pokedexreto2.lists.ViewModel.PokemonViewModel;
 import com.juanesperez.pokedexreto2.model.Pokemon;
+import com.juanesperez.pokedexreto2.model.PokemonDTO;
 
 import java.util.ArrayList;
 

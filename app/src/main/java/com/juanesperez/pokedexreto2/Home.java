@@ -1,5 +1,6 @@
 package com.juanesperez.pokedexreto2;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,24 +12,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.juanesperez.pokedexreto2.comm.HTTPSWebUtilDomi;
 import com.juanesperez.pokedexreto2.comm.PokemonWorker;
 import com.juanesperez.pokedexreto2.lists.Adapter.PokemonAdapter;
 import com.juanesperez.pokedexreto2.model.Pokemon;
-import com.juanesperez.pokedexreto2.model.Stat;
+import com.juanesperez.pokedexreto2.model.PokemonDTO;
 
-import org.json.JSONObject;
-
-import java.io.Serializable;
-import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class Home extends AppCompatActivity implements PokemonAdapter.OnPokemonClickListener{
 
@@ -43,6 +43,7 @@ public class Home extends AppCompatActivity implements PokemonAdapter.OnPokemonC
     private String pokeName;
     private PokemonWorker worker;
     private HTTPSWebUtilDomi https;
+    private  ListenerRegistration listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,36 +77,34 @@ public class Home extends AppCompatActivity implements PokemonAdapter.OnPokemonC
         worker.start();
     }
 
-    public void sendPokemon(Pokemon pokemon){
-        Map<String, Object> poke = new HashMap<>();
-        poke.put("name", pokemon.getName());
-        poke.put("sprites", pokemon.getSprites());
-        poke.put("life",pokemon.getStats()[0].getBase_stat());
-        poke.put("attack",pokemon.getStats()[1].getBase_stat());
-        poke.put("defense",pokemon.getStats()[2].getBase_stat());
-        poke.put("speed",pokemon.getStats()[5].getBase_stat());
+    public void sendPokemon(PokemonDTO pokemonDTO){
+        Date now = new Date();
+        long timestamp = now.getTime();
+        Pokemon pokemon = new Pokemon(UUID.randomUUID().toString(),
+                pokemonDTO.getName(),
+                pokemonDTO.getSprites(),
+                pokemonDTO.getTypes()[0].getType().getName(),
+                timestamp,
+                pokemonDTO.getStats()[0].getBase_stat(),
+                pokemonDTO.getStats()[1].getBase_stat(),
+                pokemonDTO.getStats()[2].getBase_stat(),
+                pokemonDTO.getStats()[5].getBase_stat());
 
-        db.collection("reto2").document(username).collection("pokemons").add(poke);
-        runOnUiThread(
-                ()->{
-                    getPokemon();
-                }
-        );
+        db.collection("reto2").document(username).collection("pokemons").document(pokemon.getId()).set(pokemon);
     }
 
     public void getPokemon(){
-        adapter.clear();
-        db.collection("reto2").document(username).collection("pokemons").get().addOnCompleteListener(
-                task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.e(">>>", document.getId() + " => " + document.getData());
-                            Pokemon pokemon = document.toObject(Pokemon.class);
-                            adapter.addPokemon(pokemon);
-                        }
+         listener = db.collection("reto2").document(username).collection("pokemons").addSnapshotListener(
+                (value, error) -> {
+                    adapter.clear();
+                    for (DocumentSnapshot document : value.getDocuments()) {
+                        Log.e(">>>", document.getId() + " => " + document.getData());
+                        Pokemon pokemon = document.toObject(Pokemon.class);
+                        adapter.addPokemon(pokemon);
                     }
                 }
         );
+
         /*Thread thread = new Thread(
                 ()->{
                     String json = https.GETrequest("https://firestore.googleapis.com/v1/projects/semana12firebase-af4d3/databases/(default)/documents/reto2/"+username+"/pokemons");
@@ -119,6 +118,12 @@ public class Home extends AppCompatActivity implements PokemonAdapter.OnPokemonC
                 }
         );
         thread.start();*/
+    }
+
+    @Override
+    protected void onDestroy() {
+        listener.remove();
+        super.onDestroy();
     }
 
     public String getPokeName() {

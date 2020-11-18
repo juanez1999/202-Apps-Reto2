@@ -1,57 +1,40 @@
 package com.juanesperez.pokedexreto2.model;
 
+
 import java.io.Serializable;
 
-public class Pokemon implements Serializable {
+public class PokemonDTO implements Serializable {
 
-    private String id;
     private String name;
     private SpriteGroup sprites;
-    private String type;
-    private long date;
+    private Stat[] stats;
+    private TypeContainer[] types;
     private int life;
     private int speed;
     private int defense;
     private int attack;
 
-    public Pokemon(){
+    public PokemonDTO() {
 
     }
 
-    public Pokemon(String id, String name, SpriteGroup sprites, String type, long date, int life, int attack, int defense, int speed) {
-        this.id = id;
+    public PokemonDTO(String name, SpriteGroup sprites, Stat[] stats, TypeContainer[] types, int life, int speed, int defense, int attack) {
         this.name = name;
         this.sprites = sprites;
-        this.type = type;
-        this.date = date;
+        this.stats = stats;
+        this.types = types;
         this.life = life;
-        this.attack = attack;
-        this.defense = defense;
         this.speed = speed;
+        this.defense = defense;
+        this.attack = attack;
     }
 
-    public long getDate() {
-        return date;
+    public TypeContainer[] getTypes() {
+        return types;
     }
 
-    public void setDate(long date) {
-        this.date = date;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public void setTypes(TypeContainer[] types) {
+        this.types = types;
     }
 
     public String getName() {
@@ -68,6 +51,14 @@ public class Pokemon implements Serializable {
 
     public void setSprites(SpriteGroup sprites) {
         this.sprites = sprites;
+    }
+
+    public Stat[] getStats() {
+        return stats;
+    }
+
+    public void setStats(Stat[] stats) {
+        this.stats = stats;
     }
 
     public int getLife() {
