@@ -4,12 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.juanesperez.pokedexreto2.model.Pokemon;
 import com.juanesperez.pokedexreto2.model.PokemonDTO;
 
@@ -19,7 +24,9 @@ public class PokemonViewDetail extends AppCompatActivity {
     private ImageView pokeimage;
     private Button close_btn, liberate_btn;
     private Pokemon pokemon;
-    private OnFreePokemonClickListener listener;
+    private FirebaseFirestore db;
+    private String username;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +45,26 @@ public class PokemonViewDetail extends AppCompatActivity {
         liberate_btn.setOnClickListener(this::liberatePoke);
         Intent i = getIntent();
         pokemon = (Pokemon) i.getSerializableExtra("pokemon");
+        username = i.getStringExtra("username");
+        db = FirebaseFirestore.getInstance();
         setVars();
     }
 
     private void liberatePoke(View view) {
+        db.collection("reto2").document(username).collection("pokemons").document(pokemon.getId()).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(">>>", "DocumentSnapshot successfully deleted!");
+                        finish();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.w(">>>", "Error deleting document", e);
+                    }
+                });
 
     }
 
@@ -62,13 +85,5 @@ public class PokemonViewDetail extends AppCompatActivity {
                 }
         );
     }
-
-    public void setListener(OnFreePokemonClickListener listener){
-        this.listener = listener;
-    }
-    public interface OnFreePokemonClickListener{
-        void onFreePokemon(Pokemon pokemon);
-    }
-
 
 }
